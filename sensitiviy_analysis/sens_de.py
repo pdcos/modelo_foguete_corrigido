@@ -35,8 +35,8 @@ def execute_sensitivity_analysis_de(combinations, filename, seed=42):
         crossover_rate = row[1]
         
         de_alg = DifferentialEvolutionAlgorithm(
-                                            num_epochs=100,
-                                            pop_size=1000,
+                                            num_epochs=50,
+                                            pop_size=4000,
                                             chrom_length=10,
                                             value_ranges=bound_values,
                                             mutation_rate=mutation_rate,

@@ -41,8 +41,8 @@ def execute_sensitivity_analysis_cmaes(combinations, filename):
         print(f"mi: {mi}, sigma: {sigma}")
         
         cmaes = CMA_ES(
-            num_epochs=100,
-            lamb=1000,
+            num_epochs=50,
+            lamb=4000,
             mi=mi,
             chrom_length=10,
             value_ranges=bound_values,

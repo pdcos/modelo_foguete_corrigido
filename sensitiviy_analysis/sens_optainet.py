@@ -89,7 +89,7 @@ def execute_sensitivity_analysis_optainet(combinations, filename):
         
         opt_ai_net = OptAiNet( 
                         num_epochs=50,
-                        pop_size=20,
+                        pop_size=40,
                         Nc=nc,
                         chrom_length=10,
                         clone_threshold=clone_threshold,

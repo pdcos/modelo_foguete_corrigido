@@ -74,8 +74,8 @@ def execute_sensitivity_analysis_optainet(combinations, filename):
         newcomers_percentage = row[4]
         
         opt_ai_net = OptAiNet( 
-                        num_epochs=100,
-                        pop_size=20,
+                        num_epochs=50,
+                        pop_size=40,
                         Nc=nc,
                         chrom_length=10,
                         clone_threshold=clone_threshold,

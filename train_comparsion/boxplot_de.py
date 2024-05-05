@@ -34,8 +34,8 @@ def execute_boxplot(path, n_exec):
         crossover_rate = 1.0
         
         de_alg = DifferentialEvolutionAlgorithm(
-                                            num_epochs=100,
-                                            pop_size=1000,
+                                            num_epochs=50,
+                                            pop_size=2000,
                                             chrom_length=10,
                                             value_ranges=bound_values,
                                             mutation_rate=mutation_rate,

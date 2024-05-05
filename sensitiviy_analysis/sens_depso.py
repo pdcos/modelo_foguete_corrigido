@@ -21,12 +21,12 @@ fitness_func_class = rocket_fitness.calc_fitness
 # mutation_rate = np.linspace(0.2, 0.9, 3)
 # crossover_rate = np.linspace(0.2, 1, 3)
 
-# global_factor_list = np.array([1.0, 2.25, 3.5])
-# local_factor_list = np.array([1.0, 2.25, 3.5])
-# v_max = np.array([5.5, 7.75, 10])
+global_factor_list = np.array([1.0, 2.25, 3.5])
+local_factor_list = np.array([1.0, 2.25, 3.5])
+v_max = np.array([5.5, 7.75, 10])
 
-# mutation_rate = np.array([0.2, 0.4, 0.6, 0.8])
-# crossover_rate = np.array([0.5, 0.7, 0.9, 1])
+mutation_rate = np.array([0.2, 0.4, 0.6, 0.8])
+crossover_rate = np.array([0.5, 0.7, 0.9, 1])
 
 grid1, grid2, grid3, grid4, grid5 = np.meshgrid(global_factor_list, local_factor_list, v_max, mutation_rate, crossover_rate)
 
@@ -48,8 +48,8 @@ def execute_sensitivity_analysis_depso(combinations, filename):
         crossover_rate = row[4]
         
         depso = DEPSO(
-            num_epochs=100,
-            pop_size=1000,
+            num_epochs=50,
+            pop_size=4000,
             chrom_length=10,
             n_best=2,
             global_factor = global_factor,

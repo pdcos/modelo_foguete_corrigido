@@ -43,8 +43,8 @@ def execute_sensitivity_analysis_pso(combinations, filename, seed=42):
         v_max = row[2]
         
         pso_alg = PSO(
-            num_epochs=100,
-            pop_size=1000,
+            num_epochs=50,
+            pop_size=4000,
             chrom_length=10,
             n_best=2,
             global_factor = global_factor,
