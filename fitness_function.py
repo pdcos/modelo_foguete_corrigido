@@ -14,17 +14,17 @@ from rocketcea.cea_obj_w_units import CEA_Obj
 
 #### GLOBAL PARAMETERS ####
 #reg_path = '/Users/pdcos/Documents/Estudos/Mestrado/Tese/Implementação da Tese do Jentzsch/rocket_optimization_implementation/model/engines/decision_tree_model.pkl'
-reg_path = '/home/ubuntu/Mestrado/modelo_foguete/model/engines/decision_tree_model.pkl'
-reg_model = joblib.load(reg_path)
-#reg_model = False
-cea_obj = ceaObj = CEA_Obj( oxName='LOX', fuelName='RP-1', pressure_units='MPa', cstar_units='m/s', temperature_units='K')
+#reg_path = '/home/ubuntu/Mestrado/modelo_foguete/model/engines/decision_tree_model.pkl'
+#reg_model = joblib.load(reg_path)
+reg_model = False
+cea_obj = ceaObj = CEA_Obj( oxName='LOX', fuelName='RP-1', pressure_units='Pa', cstar_units='m/s', temperature_units='K')
 
 
 
-bound_values = np.array([[1e6, 30e6], [1, 9], [0.05, 0.6], [2, 200],
-                [1e6, 30e6], [1, 9], [0.05, 0.6], [2, 200],
-                [1, 10],
-                [1, 10]
+bound_values = np.array([[1e6, 12e6], [1.5, 3.5], [0.2, 0.3], [2, 200],
+                [1e6, 12e6], [1.5, 3.5], [0.2, 0.3], [2, 200],
+                [1, 6],
+                [1, 6]
                 ])
 
 verbose=False   
@@ -88,7 +88,9 @@ def fitness_func(parameters_list):
             rocket_model.print_all_parameters()
 
     except:
-        return 0
+        return -1
+    
+    
     
     neg_value = 0
     if math.isnan(glow):
@@ -97,6 +99,10 @@ def fitness_func(parameters_list):
         return -1
     if math.isnan(rocket_model.m_0_2):
         return -1
+    if rocket_model.diff_raio_inf<=0:
+        neg_value += rocket_model.diff_raio_inf
+    if rocket_model.diff_raio_sup <= 0:
+        neg_value += rocket_model.diff_raio_sup
     if rocket_model.m_0_1 <= 0:
         neg_value += rocket_model.m_0_1
     if rocket_model.m_0_2 <= 0:
@@ -194,10 +200,12 @@ if __name__ == "__main__":
     #print(fit)
 
     fit_class = RocketFitness(bound_values, num_workers=4)
-    random_values = np.random.rand(1000,10)
+    np.random.seed(1)
+    random_values = np.random.rand(1,10)
     #random_values = np.array([random_values[6]])
     start_time = time.time()
     x = fit_class.calc_fitness(random_values)
+    #x = fitness_func(random_values[0])
     print("--- %s seconds ---" % (time.time() - start_time))
     #print(x)
 

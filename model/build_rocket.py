@@ -95,7 +95,7 @@ class RocketModel():
             self.build_payload_bay()
 
             diff_coef_e2 = np.abs(coef_e2 - old_coef_e2)
-            if diff_coef_e2 < 0.0001:
+            if diff_coef_e2 <= 0.0001:
                 break
 
         #print(f"Coeficiente Estrutural: {coef_e2}, Massa de Propelente: {propellantMass}")
@@ -103,6 +103,13 @@ class RocketModel():
         self.m_0_2 = propellantMass + m_pl + dryMass
         self.coef_e2 = coef_e2
         self.m_p_2 = propellantMass
+
+        if diff_coef_e2 > 0.0001:
+            self.m_p_2 = np.nan
+            self.m_0_2 = np.nan
+            self.glow = np.nan
+            return
+            #print("Não Convergiu")
 
     def calculate_propellant_mass_upper_stage(self, coef_e, m_pl, m_fairing, deltaV, g0, Isp_vac ):
         num = (m_pl - m_fairing) * (1 - math.exp( deltaV / (g0 * Isp_vac) ))
@@ -122,15 +129,27 @@ class RocketModel():
         Isp_vac = self.firstStageEngine.IspVac
         #Isp_vac = 278.4
         Isp_sea = self.firstStageEngine.IspSea
+        coef_e1_landing =  np.exp(- (self.deltaV_landing / (Isp_sea * self.g0)))
+
         for i in range(50):
+            # old_coef_e1 = coef_e1
+            # m_s_1_num = 1 - (math.exp( (self.deltaV_firstStage)/ (Isp_sea *self.g0)))
+            # m_s_1_den =   math.exp((self.deltaV_firstStage)/ (Isp_sea * self.g0)) - 1/coef_e1
+            # m_s_1 = m_s_1_num / m_s_1_den * self.m_0_2
+
+            # m_p_1 = m_s_1 * (1 - coef_e1) / coef_e1
+            # #m_p_1_landing = m_s_1 * (1 - self.coef_e1_landing) / self.coef_e1_landing
+            # #m_p_1_ascent = m_p_1 - m_p_1_landing
+
             old_coef_e1 = coef_e1
             m_s_1_num = 1 - (math.exp( (self.deltaV_firstStage)/ (Isp_sea *self.g0)))
-            m_s_1_den =   math.exp((self.deltaV_firstStage)/ (Isp_sea * self.g0)) - 1/coef_e1
-            m_s_1 = m_s_1_num / m_s_1_den * self.m_0_2
+            m_s_1_den =  (1/coef_e1_landing * math.exp((self.deltaV_firstStage)/ (Isp_sea * self.g0))) - 1/coef_e1
+            m_s_1 = (m_s_1_num / m_s_1_den) * self.m_0_2
 
             m_p_1 = m_s_1 * (1 - coef_e1) / coef_e1
-            #m_p_1_landing = m_s_1 * (1 - self.coef_e1_landing) / self.coef_e1_landing
-            #m_p_1_ascent = m_p_1 - m_p_1_landing
+            m_p_1_landing = m_s_1 * (1 - coef_e1_landing) / coef_e1_landing
+            m_p_1_ascent = m_p_1 - m_p_1_landing
+
 
             self.firstStageStructure = interStageStructure(oxName=self.firstStageStructureParams["oxName"],
                                                         fuelName=self.firstStageStructureParams["fuelName"],
@@ -149,7 +168,7 @@ class RocketModel():
             coef_e1 = dry_mass / (dry_mass + m_p_1)
 
             diff_coef_1 = np.abs(coef_e1 - old_coef_e1)
-            if diff_coef_1 < 0.0001:
+            if diff_coef_1 <= 0.0001:
                 break
         #print(f"Coeficiente Estrutural: {coef_e1}, Massa de Propelente: {m_p_1}")
 
@@ -160,13 +179,39 @@ class RocketModel():
         self.glow = self.m_0_1 + self.m_0_2
         #print(self.glow)
 
+        if diff_coef_1 > 0.0001:
+            self.glow = np.nan
+            #print("Não Convergiu")
+
     def build_all(self):
         self.build_engines()
         self.build_payload_bay()
         self.build_upper_stage()
         #self.build_landing()
         self.build_first_stage()
+        self.calc_engine_dimensions_diff()
         self.totalHeight = self.upperStageStructure.totalHeight + self.firstStageStructure.totalHeight + self.payloadBay.totalHeight
+
+    def calc_engine_dimensions_diff(self):
+        """
+        Calcula a diferenca entre o raio de saida do bocal e o raio do estágio
+        para verificar se o motor é maior que o estágio
+        """
+
+        # Calculo de diferença para estágio superior
+        raio_sup = self.upperStageStructure.radius
+        raio_bocal_sup = self.upperStageEngine.nozzleDiam/2
+        exp_ratio_sup = self.upperEngineParams["eps"]
+        raio_saida_sup = raio_bocal_sup * math.sqrt(exp_ratio_sup)
+        self.diff_raio_sup =  raio_sup - raio_saida_sup
+
+        # Calculo de diferença para estágio inferior
+        raio_inf = self.firstStageStructure.radius
+        raio_bocal_inf = self.firstStageEngine.nozzleDiam/2
+        exp_ratio_inf = self.firstEngineParams["eps"]
+        raio_saida_inf = raio_bocal_inf * math.sqrt(exp_ratio_inf)
+        self.diff_raio_inf = raio_inf - 3 * raio_saida_inf # Multipliquei por 3 aqui por conta de ter 9 motores e
+        # pela geometria de organizaacao dos motores, 3 motores por raio
 
     def print_all_parameters(self):
         print( "*"*5 + " Payload Bay " + "*"*5) 
@@ -196,44 +241,44 @@ if __name__ == "__main__":
     from rocketcea.cea_obj_w_units import CEA_Obj
 
     #reg_path = '/Users/pdcos/Documents/Estudos/Mestrado/Tese/Implementação da Tese do Jentzsch/rocket_optimization_implementation/model/engines/decision_tree_model.pkl'
-    reg_path = '/home/ubuntu/Mestrado/modelo_foguete/model/engines/decision_tree_model.pkl'
-    reg_model = joblib.load(reg_path)
-    #reg_model = False
+    #reg_path = '/home/ubuntu/Mestrado/modelo_foguete/model/engines/decision_tree_model.pkl'
+    #reg_model = joblib.load(reg_path)
+    reg_model = False
     cea_obj = ceaObj = CEA_Obj( oxName='LOX', fuelName='RP-1', pressure_units='MPa', cstar_units='m/s', temperature_units='K')
 
 
-    engineParams = {"oxName": "LOX",
-                    "fuelName": "RP-1",
-                    "combPressure": 11.5 * 1e6,
-                    "MR": 2.8,
-                    "nozzleDiam": 0.23125,
-                    "eps": 180}
+    # engineParams = {"oxName": "LOX",
+    #                 "fuelName": "RP-1",
+    #                 "combPressure": 11.5 * 1e6,
+    #                 "MR": 2.8,
+    #                 "nozzleDiam": 0.23125,
+    #                 "eps": 180}
 
-    engineParamsFirst = {"oxName": "LOX",
-                    "fuelName": "RP-1",
-                    "combPressure": 11.5 * 1e6,
-                    "MR": 2.8,
-                    "nozzleDiam": 0.23125,
-                    "eps": 25}
+    # engineParamsFirst = {"oxName": "LOX",
+    #                 "fuelName": "RP-1",
+    #                 "combPressure": 11.5 * 1e6,
+    #                 "MR": 2.8,
+    #                 "nozzleDiam": 0.23125,
+    #                 "eps": 25}
 
-    payloadBayParams = {"payloadHeight": 6.7,
-                        "payloadRadius": 4.6/2,
-                        "payloadMass": 7500,
-                        "lowerStageRadius": 2.1,
-                        "lowerRocketSurfaceArea": 0} # 0 porque ainda nao temos esse valor
+    # payloadBayParams = {"payloadHeight": 6.7,
+    #                     "payloadRadius": 4.6/2,
+    #                     "payloadMass": 7500,
+    #                     "lowerStageRadius": 2.1,
+    #                     "lowerRocketSurfaceArea": 0} # 0 porque ainda nao temos esse valor
 
-    upperStageStructureParams = {"oxName": "LOX",
-                                 "fuelName": "RP1",
-                                 "MR": 2.8,
-                                 "tankPressure": 0.1,
-                                 "radius": 2.1,
-                                } # 0 porque ainda nao temos esse valor
-    lowerStageStructureParams = {"oxName": "LOX",
-                                "fuelName": "RP1",
-                                "MR": 2.8,
-                                "tankPressure": 0.1,
-                                "radius": 2.8,
-                            } # 0 porque ainda nao temos esse valor
+    # upperStageStructureParams = {"oxName": "LOX",
+    #                              "fuelName": "RP1",
+    #                              "MR": 2.8,
+    #                              "tankPressure": 0.1,
+    #                              "radius": 2.1,
+    #                             } # 0 porque ainda nao temos esse valor
+    # lowerStageStructureParams = {"oxName": "LOX",
+    #                             "fuelName": "RP1",
+    #                             "MR": 2.8,
+    #                             "tankPressure": 0.1,
+    #                             "radius": 2.8,
+    #                         } # 0 porque ainda nao temos esse valor
 
 
     # engineParams = {"oxName": "LOX",
@@ -269,25 +314,77 @@ if __name__ == "__main__":
     #                             "radius": 6.27899536,
     #                         } # 0 porque ainda nao temos esse valor
 
-    time_start = time.time()
-    for i in range(1000):
-        rocket_model = RocketModel(upperEngineParams=engineParams,
-                                firstEngineParams=engineParamsFirst,
-                                payloadBayParams=payloadBayParams,
-                                upperStageStructureParams=upperStageStructureParams,
-                                firstStageStructureParams = lowerStageStructureParams,
-                                deltaV_upperStage=9000,
-                                deltaV_landing=2000,
-                                deltaV_firstStage=3000,
-                                nEnginesUpperStage=1,
-                                nEnignesFirstStage=9,
-                                reg_model=reg_model,
-                                cea_obj=cea_obj,
-                                )
+    # time_start = time.time()
+    # for i in range(1000):
+    #     rocket_model = RocketModel(upperEngineParams=engineParams,
+    #                             firstEngineParams=engineParamsFirst,
+    #                             payloadBayParams=payloadBayParams,
+    #                             upperStageStructureParams=upperStageStructureParams,
+    #                             firstStageStructureParams = lowerStageStructureParams,
+    #                             deltaV_upperStage=9000,
+    #                             deltaV_landing=2000,
+    #                             deltaV_firstStage=3000,
+    #                             nEnginesUpperStage=1,
+    #                             nEnignesFirstStage=9,
+    #                             reg_model=reg_model,
+    #                             cea_obj=cea_obj,
+    #                             )
 
-        rocket_model.build_all()
-        #rocket_model.print_all_parameters()
-    time_end = time.time()
-    print(f'Tempo: {time_end - time_start}')
-    #rocket_model.print_all_parameters()
-    print(rocket_model.glow)
+    #     rocket_model.build_all()
+    #     #rocket_model.print_all_parameters()
+    # time_end = time.time()
+    # print(f'Tempo: {time_end - time_start}')
+    # #rocket_model.print_all_parameters()
+    # print(rocket_model.glow)
+
+
+    engineParams = {"oxName": "LOX",
+                    "fuelName": "RP-1",
+                    "combPressure": 9.72 * 1e6,
+                    "MR": 2.36,
+                    "nozzleDiam": 0.23125,
+                    "eps": 117}
+
+    engineParamsFirst = {"oxName": "LOX",
+                    "fuelName": "RP-1",
+                    "combPressure": 9.72 * 1e6,
+                    "MR": 2.34,
+                    "nozzleDiam": 0.23125,
+                    "eps": 21.4}
+
+    payloadBayParams = {"payloadHeight": 6.7,
+                        "payloadRadius": 4.6/2,
+                        "payloadMass": 4850,
+                        "lowerStageRadius": 2.1,
+                        "lowerRocketSurfaceArea": 0} # 0 porque ainda nao temos esse valor
+
+    upperStageStructureParams = {"oxName": "LOX",
+                                 "fuelName": "RP1",
+                                 "MR": 2.36,
+                                 "tankPressure": 0.1,
+                                 "radius": 1.83,
+                                } # 0 porque ainda nao temos esse valor
+    lowerStageStructureParams = {"oxName": "LOX",
+                                "fuelName": "RP1",
+                                "MR": 2.34,
+                                "tankPressure": 0.1,
+                                "radius": 1.83,
+                            } # 0 porque ainda nao temos esse valor
+
+
+    rocket_model = RocketModel(upperEngineParams=engineParams,
+                            firstEngineParams=engineParamsFirst,
+                            payloadBayParams=payloadBayParams,
+                            upperStageStructureParams=upperStageStructureParams,
+                            firstStageStructureParams = lowerStageStructureParams,
+                            deltaV_upperStage=9000,
+                            deltaV_landing=2000,
+                            deltaV_firstStage=3000,
+                            nEnginesUpperStage=1,
+                            nEnignesFirstStage=9,
+                            reg_model=reg_model,
+                            cea_obj=cea_obj,
+                            )
+
+    rocket_model.build_all()
+    rocket_model.print_all_parameters()

@@ -152,4 +152,15 @@ class EngineProp:
         print("Thrust Vac (kN): " + str(self.thrustVac/1000))
         print("Thrust Sea (kN): " + str(self.thrustSea/1000))
 
-        
+    
+if __name__ == '__main__':
+    cea_obj = ceaObj = CEA_Obj( oxName='LOX', fuelName='RP-1', pressure_units='Pa', cstar_units='m/s', temperature_units='K')
+    engine = EngineProp(MR=2.36, 
+                        Pc=9.72e6, 
+                        eps=117, 
+                        nozzleDiam=0.23125,
+                        verbose=True,
+                        reg_model=False, 
+                        cea_obj=cea_obj, 
+                        bound_values=False)
+    engine.estimate_all()
