@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 def calculate_cea_outputs(params):
     oxName='LOX'
     fuelName='RP-1'
-    ceaObj = CEA_Obj( oxName=oxName, fuelName=fuelName, pressure_units='MPa', cstar_units='m/s', temperature_units='K')
+    ceaObj = CEA_Obj( oxName=oxName, fuelName=fuelName, pressure_units='Pa', cstar_units='m/s', temperature_units='K')
 
     #min_mat = bound_values.T[0, :]
     #max_mat = bound_values.T[1,:]
@@ -54,7 +54,7 @@ bound_values = np.array([[0.1e6, 12e6], [1.5, 3.5], [2, 200]])
 def calculate_cea_params_single(params):
     oxName='LOX'
     fuelName='RP-1'
-    ceaObj = CEA_Obj( oxName=oxName, fuelName=fuelName, pressure_units='MPa', cstar_units='m/s', temperature_units='K')
+    ceaObj = CEA_Obj( oxName=oxName, fuelName=fuelName, pressure_units='Pa', cstar_units='m/s', temperature_units='K')
 
     #min_mat = bound_values.T[0, :]
     #max_mat = bound_values.T[1,:]
@@ -104,7 +104,7 @@ class CalculaCEA():
     def calculate_cea_single(self, params):
         oxName='LOX'
         fuelName='RP-1'
-        self.ceaObj = CEA_Obj( oxName=oxName, fuelName=fuelName, pressure_units='MPa', cstar_units='m/s', temperature_units='K')
+        self.ceaObj = CEA_Obj( oxName=oxName, fuelName=fuelName, pressure_units='Pa', cstar_units='m/s', temperature_units='K')
         IspVac, Cstar, Tc, mw, gamma = self.ceaObj.get_IvacCstrTc_ChmMwGam(Pc=params[0], MR=params[1], eps=params[2])
 
         valores_calculados = [IspVac, Cstar, Tc, mw, gamma]

@@ -34,7 +34,7 @@ class EngineProp:
 
 
         if bound_values == False:
-            self.bound_values = np.array([[1e6, 30e6], [1, 9], [2, 200]])
+            self.bound_values = np.array([[0.1e6, 12e6], [1.5, 3.5], [2, 200]])
         else:
             self.bound_values = bound_values
         self.min_mat = self.bound_values.T[0, :]
