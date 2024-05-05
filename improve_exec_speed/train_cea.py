@@ -173,6 +173,6 @@ if __name__ == '__main__':
     parser.add_argument('--model_name', type=str, default='linear_regression')
     args = parser.parse_args()
     model_name = args.model_name
-    data_path = '/home/ubuntu/Mestrado/modelo_foguete/improve_exec_speed/data/grid_target.csv'
+    data_path = '/home/ubuntu/Mestrado/modelo_foguete_corrigido/improve_exec_speed/data/grid_target.csv'
     trainer = Trainer(model_name=model_name, data_path=data_path)
     trainer.execute()

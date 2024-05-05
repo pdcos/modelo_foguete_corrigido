@@ -49,7 +49,7 @@ def grid_search(N, grid_resolution):
 
 
 # Processamento paralelo
-bound_values = np.array([[1e6, 30e6], [1, 9], [2, 200]])
+bound_values = np.array([[0.1e6, 12e6], [1.5, 3.5], [2, 200]])
 
 def calculate_cea_params_single(params):
     oxName='LOX'

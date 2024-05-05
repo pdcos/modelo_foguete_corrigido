@@ -21,8 +21,8 @@ cea_obj = ceaObj = CEA_Obj( oxName='LOX', fuelName='RP-1', pressure_units='Pa', 
 
 
 
-bound_values = np.array([[1e6, 12e6], [1.5, 3.5], [0.2, 0.3], [2, 200],
-                [1e6, 12e6], [1.5, 3.5], [0.2, 0.3], [2, 200],
+bound_values = np.array([[0.1e6, 12e6], [1.5, 3.5], [0.2, 0.3], [2, 200],
+                [0.1e6, 12e6], [1.5, 3.5], [0.2, 0.3], [2, 200],
                 [1, 6],
                 [1, 6]
                 ])
