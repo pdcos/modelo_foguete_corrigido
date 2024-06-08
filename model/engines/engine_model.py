@@ -37,6 +37,10 @@ class EngineProp:
             self.bound_values = np.array([[0.1e6, 12e6], [1.5, 3.5], [2, 200]])
         else:
             self.bound_values = bound_values
+        # if bound_values_cea is None:
+        #     self.bound_values_cea = np.array([[0.1e6, 12e6], [1.5, 3.5], [2, 200]])
+        # else:
+        #     self.bound_values_cea = bound_values_cea
         self.min_mat = self.bound_values.T[0, :]
         self.max_mat = self.bound_values.T[1,:]
 
@@ -55,6 +59,10 @@ class EngineProp:
         if self.reg_model:
             input = np.array([[self.Pc, self.MR, self.eps]])
             input = (input - self.min_mat)/ (self.max_mat - self.min_mat)
+
+            # input = input * (self.bound_values[:, 1] - self.bound_values[:, 0]) + self.bound_values[:, 0]
+            # input = (input - self.bound_values_cea.T[0, :]) / (self.bound_values_cea.T[1, :] - self.bound_values_cea.T[0, :])
+
             IspSea, IspVac, Cstar, mw, Tc, gamma = self.reg_model.predict(input)[0]
             m_molar = mw/1000
         else:
@@ -155,12 +163,33 @@ class EngineProp:
     
 if __name__ == '__main__':
     cea_obj = ceaObj = CEA_Obj( oxName='LOX', fuelName='RP-1', pressure_units='Pa', cstar_units='m/s', temperature_units='K')
+    reg_path = '/home/ubuntu/Mestrado/modelo_foguete_corrigido/improve_exec_speed/data/DecisionTreeRegressor_score_1.0.joblib'
+    reg_model = joblib.load(reg_path)
+
     engine = EngineProp(MR=2.36, 
                         Pc=9.72e6, 
                         eps=117, 
                         nozzleDiam=0.23125,
                         verbose=True,
-                        reg_model=False, 
+                        reg_model=reg_model, 
                         cea_obj=cea_obj, 
                         bound_values=False)
     engine.estimate_all()
+
+    print("#"*10)
+
+    bounds = np.array([[7e6, 12e6], [1.5, 2.5], [0.2, 0.3], [30, 200]])
+    inputs = np.array([[9.72e6, 2.36, 0.23125, 117]])
+
+    # normalized = (inputs - bounds[:, 0]) / (bounds[:, 1] - bounds[:, 0])
+    # print(normalized)
+
+    # engine = EngineProp(MR=normalized[0][1], 
+    #                     Pc=normalized[0][0], 
+    #                     eps=normalized[0][3], 
+    #                     nozzleDiam=normalized[0][2],
+    #                     verbose=True,
+    #                     reg_model=reg_model, 
+    #                     cea_obj=cea_obj, 
+    #                     bound_values=bounds[[0, 1, 3]])
+    # engine.estimate_all()

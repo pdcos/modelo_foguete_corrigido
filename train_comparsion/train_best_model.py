@@ -30,15 +30,15 @@ def execute_boxplot(path, n_exec):
     # itera n_exec vezes
     for seed in tqdm(seed_list):
 
-        global_factor = 2.25
+        global_factor = 3.5
         local_factor = 2.25
         v_max = 5.5
-        mutation_rate = 0.6
+        mutation_rate = 0.8
         crossover_rate = 1.0
         
         depso = DEPSO(
-            num_epochs=50,
-            pop_size=2000,
+            num_epochs=50000,
+            pop_size=4000,
             chrom_length=10,
             n_best=2,
             global_factor = global_factor,
@@ -49,7 +49,7 @@ def execute_boxplot(path, n_exec):
             fitness_func=fitness_func_class,
             neighborhood_mode='self',
             verbose=True,
-            eval_every=5,
+            eval_every=100,
             crossover_rate = crossover_rate,
             mutation_rate = mutation_rate,
             seed=1,

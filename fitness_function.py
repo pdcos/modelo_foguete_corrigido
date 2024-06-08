@@ -23,11 +23,19 @@ cea_obj = ceaObj = CEA_Obj( oxName='LOX', fuelName='RP-1', pressure_units='Pa', 
 
 
 
-bound_values = np.array([[0.1e6, 12e6], [1.5, 3.5], [0.2, 0.3], [2, 200],
-                [0.1e6, 12e6], [1.5, 3.5], [0.2, 0.3], [2, 200],
-                [1, 6],
-                [1, 6]
+# bound_values = np.array([[0.1e6, 12e6], [1.5, 3.5], [0.2, 0.3], [2, 200],
+#                 [0.1e6, 12e6], [1.5, 3.5], [0.2, 0.3], [2, 200],
+#                 [1, 6],
+#                 [1, 6]
+#                 ])
+
+
+bound_values = np.array([[7e6, 12e6], [1.5, 2.5], [0.2, 0.3], [30, 200],
+                [7e6, 12e6], [1.5, 2.5], [0.2, 0.3], [2, 70],
+                [1.5, 4.5],
+                [1.5, 4.5]
                 ])
+
 
 verbose=False   
 
@@ -81,7 +89,8 @@ def fitness_func(parameters_list):
                                nEnginesUpperStage=1,
                                nEnignesFirstStage=9,
                                reg_model=reg_model,
-                               cea_obj=cea_obj)
+                               cea_obj=cea_obj,
+                               bound_values=bound_values)
 
     try:
         rocket_model.build_all()
@@ -183,6 +192,15 @@ class RocketFitness():
         #     self.worst_ind_denorm = pop[results.argmax()]
 
         return results
+    
+    def calc_fit_sequential(self, params_matrix):
+        pop = params_matrix * (self.max_mat - self.min_mat) + self.min_mat
+        results = []
+        for x in pop:
+            results.append(fitness_func(x))
+        results = np.array(results)
+        results = (results + 1)/2
+        return results
         
 
 
@@ -201,14 +219,30 @@ if __name__ == "__main__":
     #fit = fitness_func(params_list)
     #print(fit)
 
+
+
+    # fit_class = RocketFitness(bound_values, num_workers=4)
+    # np.random.seed(1)
+    # random_values = np.random.rand(1,10)
+    # #random_values = np.array([random_values[6]])
+    # start_time = time.time()
+    # x = fit_class.calc_fitness(random_values)
+    # #x = fitness_func(random_values[0])
+    # print("--- %s seconds ---" % (time.time() - start_time))
+    # #print(x)
+
+
     fit_class = RocketFitness(bound_values, num_workers=4)
-    np.random.seed(1)
-    random_values = np.random.rand(1,10)
-    #random_values = np.array([random_values[6]])
-    start_time = time.time()
-    x = fit_class.calc_fitness(random_values)
-    #x = fitness_func(random_values[0])
-    print("--- %s seconds ---" % (time.time() - start_time))
+    np.random.seed(20)
+    random_values = np.random.rand(1000,10)
+    # start_time = time.time()
+    #x = fit_class.calc_fit_sequential(random_values)
     #print(x)
+    x = fit_class.calc_fitness(random_values)
+    print(x.sum())
+    print(x.max())
+    # #x = fitness_func(random_values[0])
+    # print("--- %s seconds ---" % (time.time() - start_time))
+    # #print(x)
 
 

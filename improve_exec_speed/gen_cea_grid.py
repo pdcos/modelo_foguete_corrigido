@@ -50,6 +50,13 @@ def grid_search(N, grid_resolution):
 
 # Processamento paralelo
 bound_values = np.array([[0.1e6, 12e6], [1.5, 3.5], [2, 200]])
+#bound_values = np.array([[7e6, 12e6], [1.5, 2.5], [2, 200]])
+
+# bound_values = np.array([[7e6, 12e6], [1.5, 2.5], [0.2, 0.3], [30, 200],
+#                 [7e6, 12e6], [1.5, 2.5], [0.2, 0.3], [2, 100],
+#                 [1.5, 4.5],
+#                 [1.5, 4.5]
+#                 ])
 
 def calculate_cea_params_single(params):
     oxName='LOX'
@@ -122,6 +129,9 @@ class CalculaCEA():
 
 
 def main():
+    # Mede o tempo total de execução
+    import time
+    start = time.time()
 
     # Encontra o diretório em que o arquivo atual está:
     current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -136,7 +146,12 @@ def main():
     df_target = pd.DataFrame(y, columns=['IspSea','IspVac','Cstar', 'Tc', 'mw', 'gamma', ])
     df_grid_target = pd.concat([df_grid_points, df_target], axis=1)
     # salva os dados num csv dentro da pasta data no diretório atual
-    df_grid_target.to_csv( current_dir + '/data/grid_target.csv', index=False)
+    #df_grid_target.to_csv( current_dir + '/data/grid_target.csv', index=False)
+
+    end = time.time()
+
+    print('Total time taken: ', end - start)
+    
     return
 
 if __name__ == '__main__':

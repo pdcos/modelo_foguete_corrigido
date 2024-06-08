@@ -11,7 +11,7 @@ except:
 
 
 class RocketModel():
-    def __init__(self, upperEngineParams, firstEngineParams, payloadBayParams, upperStageStructureParams, firstStageStructureParams, deltaV_upperStage, deltaV_landing, deltaV_firstStage, nEnginesUpperStage, nEnignesFirstStage, reg_model=False, cea_obj=False):
+    def __init__(self, upperEngineParams, firstEngineParams, payloadBayParams, upperStageStructureParams, firstStageStructureParams, deltaV_upperStage, deltaV_landing, deltaV_firstStage, nEnginesUpperStage, nEnignesFirstStage, reg_model=False, cea_obj=False, bound_values=False):
         self.upperEngineParams = upperEngineParams
         self.firstEngineParams = firstEngineParams
         self.payloadBayParams = payloadBayParams
@@ -26,6 +26,7 @@ class RocketModel():
         self.nEnginesFirstStage = nEnignesFirstStage
         self.reg_model = reg_model
         self.cea_obj = cea_obj
+        self.bound_values = bound_values
     
 
     def build_engines(self):
@@ -37,7 +38,8 @@ class RocketModel():
                                            eps = self.upperEngineParams["eps"],
                                            verbose=False,
                                            reg_model=self.reg_model,
-                                           cea_obj=self.cea_obj)
+                                           cea_obj=self.cea_obj,
+                                           )
         self.firstStageEngine = EngineProp(#fuelName = self.firstEngineParams["fuelName"],
                                            #oxName = self.firstEngineParams["oxName"],
                                            Pc = self.firstEngineParams["combPressure"],
@@ -46,7 +48,8 @@ class RocketModel():
                                            eps = self.firstEngineParams["eps"],
                                            verbose=False,
                                            reg_model=self.reg_model,
-                                           cea_obj=self.cea_obj)
+                                           cea_obj=self.cea_obj,
+                                           )
         
         self.upperStageEngine.estimate_all()
         self.firstStageEngine.estimate_all()
@@ -244,8 +247,8 @@ if __name__ == "__main__":
     #reg_path = '/home/ubuntu/Mestrado/modelo_foguete/model/engines/decision_tree_model.pkl'
     reg_path = '/home/ubuntu/Mestrado/modelo_foguete_corrigido/improve_exec_speed/data/DecisionTreeRegressor_score_1.0.joblib'
     reg_model = joblib.load(reg_path)
-    #reg_model = False
-    cea_obj = ceaObj = CEA_Obj( oxName='LOX', fuelName='RP-1', pressure_units='MPa', cstar_units='m/s', temperature_units='K')
+    reg_model = False
+    cea_obj = ceaObj = CEA_Obj( oxName='LOX', fuelName='RP-1', pressure_units='Pa', cstar_units='m/s', temperature_units='K')
 
 
     # engineParams = {"oxName": "LOX",

@@ -75,7 +75,7 @@ def execute_sensitivity_analysis_optainet(combinations, filename):
         
         opt_ai_net = OptAiNet( 
                         num_epochs=50,
-                        pop_size=40,
+                        pop_size=20,
                         Nc=nc,
                         chrom_length=10,
                         clone_threshold=clone_threshold,
@@ -90,7 +90,7 @@ def execute_sensitivity_analysis_optainet(combinations, filename):
         )
 
         best_solutions_container = {}
-        success = run_optimization(opt_ai_net, best_solutions_container, 300)
+        success = run_optimization(opt_ai_net, best_solutions_container, 500)
 
         if not success:
             dict_save = {

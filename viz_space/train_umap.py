@@ -20,6 +20,25 @@ grid_points_scores = np.loadtxt('grid_search_rocket.csv', delimiter=',')
 grid_points = grid_points_scores[:, :-1]
 fitness_scores = grid_points_scores[:, -1]
 
+# Deleta o grid_points_scores para liberar memória
+del grid_points_scores
+
+# Remove aleatoriamente pontos de fitness = 0.5 e fitness = 0 até que tenham apenas 1.000.000 pontos
+np.random.seed(42)
+zero_points = np.where(fitness_scores == 0)[0]
+zero_points = np.random.choice(zero_points, zero_points.shape[0] - 500000, replace=False)
+print(zero_points.shape)
+
+half_points = np.where(fitness_scores == 0.5)[0]
+half_points = np.random.choice(half_points, half_points.shape[0] - 500000, replace=False)
+print(half_points.shape)
+
+points_to_remove = np.concatenate((zero_points, half_points))
+grid_points = np.delete(grid_points, points_to_remove, axis=0)
+fitness_scores = np.delete(fitness_scores, points_to_remove, axis=0)
+print(grid_points.shape)
+
+
 # Definir um conjunto de hiperparâmetros para testar no UMAP
 param_grid = {
     'n_neighbors': [5, 15, 30],

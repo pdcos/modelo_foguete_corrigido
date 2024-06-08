@@ -30,15 +30,15 @@ def execute_boxplot(path, n_exec):
     # itera n_exec vezes
     for seed in tqdm(seed_list):
 
-        nc = int(8)
+        nc = int(4)
         beta = 10
-        clone_threshold = 0.05
+        clone_threshold = 0.3
         supression_threshold = 0.8
         newcomers_percentage = 0.4
         
         opt_ai_net = OptAiNet( 
                         num_epochs=50,
-                        pop_size=40,
+                        pop_size=20,
                         Nc=nc,
                         chrom_length=10,
                         clone_threshold=clone_threshold,
@@ -51,7 +51,7 @@ def execute_boxplot(path, n_exec):
                         eval_every=10,
                         #limit_fitness_calls= 1000 * 2 * 100
                         limit_fitness_calls = np.inf,
-                        seed=seed
+                        seed=seed * 2
         )
         best_solutions = opt_ai_net.fit()
         dict_save = {
