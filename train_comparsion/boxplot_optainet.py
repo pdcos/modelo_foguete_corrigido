@@ -31,13 +31,13 @@ def execute_boxplot(path, n_exec):
     for seed in tqdm(seed_list):
 
         nc = int(4)
-        beta = 10
-        clone_threshold = 0.3
-        supression_threshold = 0.8
-        newcomers_percentage = 0.4
+        beta = 10.0
+        clone_threshold = 0.05
+        supression_threshold = 2.0
+        newcomers_percentage = 0.1
         
         opt_ai_net = OptAiNet( 
-                        num_epochs=50,
+                        num_epochs=100,
                         pop_size=20,
                         Nc=nc,
                         chrom_length=10,
@@ -51,7 +51,7 @@ def execute_boxplot(path, n_exec):
                         eval_every=10,
                         #limit_fitness_calls= 1000 * 2 * 100
                         limit_fitness_calls = np.inf,
-                        seed=seed * 2
+                        seed=seed 
         )
         best_solutions = opt_ai_net.fit()
         dict_save = {
@@ -75,7 +75,7 @@ def execute_boxplot(path, n_exec):
         json.dump(results, f)   
     return
 
-path = './results/optainet_boxplot.json'
+path = './results/optainet_boxplot_red.json'
 
 
 execute_boxplot(path, 20)

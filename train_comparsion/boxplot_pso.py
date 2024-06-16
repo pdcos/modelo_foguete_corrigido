@@ -31,14 +31,14 @@ def execute_boxplot(path, n_exec):
     for seed in tqdm(seed_list):
 
 
-        global_factor = 4.75
-        local_factor = 1.0
-        v_max = 3.25
+        global_factor = 2.25
+        local_factor = 2.25
+        v_max = 5.5
 
 
         pso_alg = PSO(
-            num_epochs=50,
-            pop_size=4000,
+            num_epochs=100,
+            pop_size=1000,
             chrom_length=10,
             n_best=2,
             global_factor = global_factor,
@@ -50,7 +50,7 @@ def execute_boxplot(path, n_exec):
             neighborhood_mode='self',
             verbose=True,
             eval_every=10,
-            seed=seed * 2
+            seed=seed 
             )
 
         best_solutions =  pso_alg.fit()
@@ -74,7 +74,7 @@ def execute_boxplot(path, n_exec):
         json.dump(results, f)   
     return
 
-path = './results/pso_boxplot.json'
+path = './results/pso_boxplot_red.json'
 
 
 execute_boxplot(path, 20)

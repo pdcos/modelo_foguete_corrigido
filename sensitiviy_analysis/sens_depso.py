@@ -48,8 +48,8 @@ def execute_sensitivity_analysis_depso(combinations, filename):
         crossover_rate = row[4]
         
         depso = DEPSO(
-            num_epochs=50,
-            pop_size=4000,
+            num_epochs=100,
+            pop_size=1000,
             chrom_length=10,
             n_best=2,
             global_factor = global_factor,
@@ -60,7 +60,7 @@ def execute_sensitivity_analysis_depso(combinations, filename):
             fitness_func=fitness_func_class,
             neighborhood_mode='self',
             verbose=True,
-            eval_every=99,
+            eval_every=10,
             crossover_rate = crossover_rate,
             mutation_rate = mutation_rate,
             seed=1
@@ -88,5 +88,5 @@ def execute_sensitivity_analysis_depso(combinations, filename):
 
 
 if __name__ == '__main__':
-    execute_sensitivity_analysis_depso(combinations, 'simulations/depso_sensitivity.json')
+    execute_sensitivity_analysis_depso(combinations, 'simulations/depso_sensitivity_red.json')
     

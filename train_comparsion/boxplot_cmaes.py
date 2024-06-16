@@ -30,14 +30,14 @@ def execute_boxplot(path, n_exec):
     # itera n_exec vezes
     for seed in tqdm(seed_list):
 
-        mi = 5
-        sigma = 0.65
+        mi = 1
+        sigma = 0.35
 
         print(f"mi: {mi}, sigma: {sigma}")
         
         cmaes = CMA_ES(
-            num_epochs=50,
-            lamb=4000,
+            num_epochs=100,
+            lamb=1000,
             mi=mi,
             chrom_length=10,
             value_ranges=bound_values,
@@ -45,7 +45,7 @@ def execute_boxplot(path, n_exec):
             eval_every=10,
             verbose=True,
             sigma=sigma,
-            seed = seed * 2,
+            seed = seed,
         )
         best_solutions = cmaes.fit()
 
@@ -66,7 +66,7 @@ def execute_boxplot(path, n_exec):
         json.dump(results, f)   
     return
 
-path = './results/cmaes_boxplot.json'
+path = './results/cmaes_boxplot_red.json'
 
 
 execute_boxplot(path, 20)

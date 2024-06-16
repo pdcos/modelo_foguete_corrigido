@@ -31,14 +31,14 @@ def execute_boxplot(path, n_exec):
     for seed in tqdm(seed_list):
 
         global_factor = 3.5
-        local_factor = 2.25
-        v_max = 5.5
-        mutation_rate = 0.8
-        crossover_rate = 1.0
+        local_factor = 1.0
+        v_max = 10.0
+        mutation_rate = 0.2
+        crossover_rate = 0.9
         
         depso = DEPSO(
             num_epochs=50000,
-            pop_size=4000,
+            pop_size=1000,
             chrom_length=10,
             n_best=2,
             global_factor = global_factor,
@@ -77,7 +77,7 @@ def execute_boxplot(path, n_exec):
         json.dump(results, f)   
     return
 
-path = './results/depso_best_model.json'
+path = './results/depso_best_model_2.json'
 
 
 execute_boxplot(path, 1)

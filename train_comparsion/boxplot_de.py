@@ -30,12 +30,12 @@ def execute_boxplot(path, n_exec):
     # itera n_exec vezes
     for seed in tqdm(seed_list):
 
-        mutation_rate = 1.0
+        mutation_rate = 0.8
         crossover_rate = 0.9
         
         de_alg = DifferentialEvolutionAlgorithm(
-                                            num_epochs=50,
-                                            pop_size=4000,
+                                            num_epochs=100,
+                                            pop_size=1000,
                                             chrom_length=10,
                                             value_ranges=bound_values,
                                             mutation_rate=mutation_rate,
@@ -43,7 +43,7 @@ def execute_boxplot(path, n_exec):
                                             fitness_func=fitness_func_class,
                                             verbose=True,
                                             eval_every=10,
-                                            seed=seed * 2
+                                            seed=seed 
                                             )
 
         best_solutions = de_alg.fit()
@@ -65,7 +65,7 @@ def execute_boxplot(path, n_exec):
         json.dump(results, f)   
     return
 
-path = './results/de_boxplot.json'
+path = './results/de_boxplot_red.json'
 
 
 execute_boxplot(path, 20)

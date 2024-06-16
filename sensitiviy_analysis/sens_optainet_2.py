@@ -9,7 +9,6 @@ from tqdm import tqdm
 import json
 
 
-
 rocket_fitness = RocketFitness(bound_values, num_workers=4)
 random_values = np.random.rand(10,10)
 fitness_func_class = rocket_fitness.calc_fitness
@@ -72,9 +71,16 @@ def execute_sensitivity_analysis_optainet(combinations, filename):
         clone_threshold = row[2]
         supression_threshold = row[3]
         newcomers_percentage = row[4]
+
+        nc = int(4)
+        beta = 10.0
+        clone_threshold = 0.05
+        supression_threshold = 2.0
+        newcomers_percentage = 0.1
+
         
         opt_ai_net = OptAiNet( 
-                        num_epochs=50,
+                        num_epochs=100,
                         pop_size=20,
                         Nc=nc,
                         chrom_length=10,
@@ -86,11 +92,12 @@ def execute_sensitivity_analysis_optainet(combinations, filename):
                         fitness_func=fitness_func_class,
                         verbose=True,
                         eval_every=10,
-                        limit_fitness_calls=np.inf
+                        limit_fitness_calls=np.inf,
+                        seed=1
         )
 
         best_solutions_container = {}
-        success = run_optimization(opt_ai_net, best_solutions_container, 500)
+        success = run_optimization(opt_ai_net, best_solutions_container, 300)
 
         if not success:
             dict_save = {
@@ -122,8 +129,8 @@ def execute_sensitivity_analysis_optainet(combinations, filename):
         simulations_list.append(dict_save)
 
         
-    with open(filename, 'w') as fout:
-        json.dump(simulations_list, fout)
+    #with open(filename, 'w') as fout:
+        #json.dump(simulations_list, fout)
 
 if __name__ == '__main__':
-    execute_sensitivity_analysis_optainet(combinations, 'simulations/optainet_new_sensitivity.json')
+    execute_sensitivity_analysis_optainet(combinations, 'simulations/optainet_sensitivity_red.json')

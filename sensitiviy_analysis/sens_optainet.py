@@ -88,8 +88,8 @@ def execute_sensitivity_analysis_optainet(combinations, filename):
         newcomers_percentage = row[4]
         
         opt_ai_net = OptAiNet( 
-                        num_epochs=50,
-                        pop_size=80,
+                        num_epochs=100,
+                        pop_size=20,
                         Nc=nc,
                         chrom_length=10,
                         clone_threshold=clone_threshold,
@@ -145,5 +145,5 @@ def execute_sensitivity_analysis_optainet(combinations, filename):
 
 
 if __name__ == '__main__':
-    execute_sensitivity_analysis_optainet(combinations, 'simulations/optainet_new_sensitivity.json')
+    execute_sensitivity_analysis_optainet(combinations, 'simulations/optainet_new_sensitivity_red.json')
     

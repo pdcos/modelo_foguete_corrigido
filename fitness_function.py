@@ -17,8 +17,8 @@ from rocketcea.cea_obj_w_units import CEA_Obj
 #reg_path = '/home/ubuntu/Mestrado/modelo_foguete/model/engines/decision_tree_model.pkl'
 reg_path = '/home/ubuntu/Mestrado/modelo_foguete_corrigido/improve_exec_speed/data/DecisionTreeRegressor_score_1.0.joblib'
 
-reg_model = joblib.load(reg_path)
-#reg_model = False
+#reg_model = joblib.load(reg_path)
+reg_model = False
 cea_obj = ceaObj = CEA_Obj( oxName='LOX', fuelName='RP-1', pressure_units='Pa', cstar_units='m/s', temperature_units='K')
 
 
@@ -30,11 +30,18 @@ cea_obj = ceaObj = CEA_Obj( oxName='LOX', fuelName='RP-1', pressure_units='Pa', 
 #                 ])
 
 
-bound_values = np.array([[7e6, 12e6], [1.5, 2.5], [0.2, 0.3], [30, 200],
-                [7e6, 12e6], [1.5, 2.5], [0.2, 0.3], [2, 70],
+# bound_values = np.array([[7e6, 12e6], [1.5, 2.5], [0.2, 0.3], [30, 200],
+#                 [7e6, 12e6], [1.5, 2.5], [0.2, 0.3], [2, 70],
+#                 [1.5, 4.5],
+#                 [1.5, 4.5]
+#                 ])
+
+bound_values = np.array([[7e6, 12e6], [1.8, 3.2], [0.2, 0.3], [30, 200],
+                [7e6, 12e6], [1.8, 3.2], [0.2, 0.3], [2, 70],
                 [1.5, 4.5],
                 [1.5, 4.5]
                 ])
+
 
 
 verbose=False   
@@ -234,13 +241,15 @@ if __name__ == "__main__":
 
     fit_class = RocketFitness(bound_values, num_workers=4)
     np.random.seed(20)
-    random_values = np.random.rand(1000,10)
+    random_values = np.random.rand(100,10)
     # start_time = time.time()
     #x = fit_class.calc_fit_sequential(random_values)
     #print(x)
     x = fit_class.calc_fitness(random_values)
     print(x.sum())
     print(x.max())
+    print(x)
+
     # #x = fitness_func(random_values[0])
     # print("--- %s seconds ---" % (time.time() - start_time))
     # #print(x)

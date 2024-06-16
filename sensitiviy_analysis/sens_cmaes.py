@@ -41,13 +41,13 @@ def execute_sensitivity_analysis_cmaes(combinations, filename):
         print(f"mi: {mi}, sigma: {sigma}")
         
         cmaes = CMA_ES(
-            num_epochs=50,
-            lamb=4000,
+            num_epochs=100,
+            lamb=1000,
             mi=mi,
             chrom_length=10,
             value_ranges=bound_values,
             fitness_func=fitness_func_class,
-            eval_every=99,
+            eval_every=10,
             verbose=True,
             sigma=sigma,
             seed = 1,
@@ -82,4 +82,4 @@ def execute_sensitivity_analysis_cmaes(combinations, filename):
     return
 
 if __name__ == '__main__':
-    execute_sensitivity_analysis_cmaes(combinations, 'simulations/cmaes_sensitivity.json')
+    execute_sensitivity_analysis_cmaes(combinations, 'simulations/cmaes_sensitivity_red.json')

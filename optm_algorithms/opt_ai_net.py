@@ -27,7 +27,8 @@ class OptAiNet():
                  eval_every=100,
                  verbose = 0,
                  maintain_history = False,
-                 limit_fitness_calls = np.inf
+                 limit_fitness_calls = np.inf,
+                 callback=None
                 ):
         
         self.num_epochs = num_epochs
@@ -40,6 +41,7 @@ class OptAiNet():
         self.clone_threshold = clone_threshold
         self.supression_threshold = supression_threshold
         self.newcomers_percentage = newcomers_percentage
+        self.callback_func = callback
 
         self.f_pop_avg_previous = 0
         self.continue_clone = True
@@ -99,7 +101,7 @@ class OptAiNet():
         #self.f_pop = self.fitness_func(self.pop)
     
     def fitness_evaluation(self):
-        self.f_pop = self.fitness_func(self.pop, self.value_ranges)
+        self.f_pop = self.fitness_func(self.pop)
         self.fitness_calls_counter += 1 * len(self.pop) 
         self.curr_f_max = self.f_pop.max()
         self.curr_f_min = self.f_pop.min()
@@ -285,6 +287,10 @@ class OptAiNet():
             self.exec_time_list[self.curr_epoch] = time.time() - start_time
             if self.fitness_calls_counter >= self.limit_fitness_calls:
                 break
+
+            if self.callback_func is not None:
+                self.callback_func(self)
+                
         self.total_exec_time = time.time() - start_time
         print("--- %s seconds ---" % (self.total_exec_time))
         return self.best_ind
